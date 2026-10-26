@@ -52,13 +52,17 @@ cargo-cache/              CARGO_HOME shared by all builds (crate registry + down
 stellar-config/stellar/   Stellar CLI identities (XDG_CONFIG_HOME), one alias per project id
 ```
 
-## Deploy on Railway
+## Deploy on Dokploy
 
-1. Push this repo to GitHub and create a Railway service from it (Dockerfile is auto-detected; `railway.toml` sets the health check).
-2. Add a **volume** mounted at `/data`.
-3. Variables: `MASTER_TOKEN` (required). Optionally `JOB_CONCURRENCY`, `JOB_TIMEOUT_MS`.
-4. Resources: 4 GB RAM recommended (two concurrent Rust builds). Keep **1 replica**: the queue and SQLite are in-process.
-5. Verify: `curl https://<host>/health` then run `scripts/e2e.sh` against the public URL.
+1. Push this repo to GitHub.
+2. In Dokploy: **Create Application** → provider GitHub → pick the repo and branch. Build type: **Dockerfile** (path `Dockerfile`).
+3. **Environment**: `MASTER_TOKEN=<secret, 16+ chars>`. `PORT` stays 3000. Optional: `JOB_CONCURRENCY`, `JOB_TIMEOUT_MS`.
+4. **Advanced → Volumes**: add a *Volume Mount* with mount path `/data` (name e.g. `soroban-factory-data`). Without it the DB, workspaces and identities are lost on every deploy.
+5. **Advanced → Resources**: at least 4 GB RAM (two concurrent Rust builds). Keep **1 replica**: queue and SQLite are in-process.
+6. **Domains**: add a host, container port `3000`, HTTPS on. Health check path `/health`.
+7. Deploy, then verify: `curl https://<host>/health` and run `scripts/e2e.sh` against the public URL.
+
+The first image build takes ~10 min (Rust + Stellar CLI). Builds run on the Dokploy server, so give it disk for the image (~2 GB) and for `/data`.
 
 ## Hard rules
 

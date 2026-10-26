@@ -10,7 +10,7 @@
 - [x] 8. Cola de jobs: `build` y `deploy` (+`generate`), concurrencia 2, un job activo por proyecto, logs en DB.
 - [x] 9. `GET /jobs/:id`, `GET /projects/:id`, `/artifacts`, `/bindings`.
 - [x] 10. Prueba end-to-end local con Docker: crear proyecto → subir contrato hello-world → build → deploy → leer contract ID.
-- [ ] 11. Railway: repo conectado, volumen en /data, env vars, 4 GB RAM. Probar con la URL pública.
+- [ ] 11. Dokploy: app desde el repo (Dockerfile), volumen en /data, `MASTER_TOKEN`, 4 GB RAM, dominio. Probar con la URL pública (`scripts/e2e.sh`).
 - [ ] 12. Entregar docs/API.md a Pollar Studio.
 
 Después (no ahora): webhooks, `/generate` con IA, mainnet con firma de wallet.
