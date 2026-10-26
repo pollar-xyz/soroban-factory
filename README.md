@@ -4,6 +4,8 @@ HTTP service that compiles and deploys Soroban (Stellar) contracts with Caatinga
 A client (Pollar Studio) sends Rust sources; this service builds them, deploys to **testnet**
 and returns contract IDs plus TypeScript bindings. No AI inside.
 
+Production: https://soroban-factory.pollar.dev (Dokploy, auto-deploys from `main`)
+
 Docs: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) · [docs/API.md](docs/API.md) · [docs/PLAN.md](docs/PLAN.md) · [docs/RULES.md](docs/RULES.md)
 
 ## Run locally
