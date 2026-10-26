@@ -1,0 +1,13 @@
+# Railway service config (https://docs.railway.com/reference/config-as-code)
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "Dockerfile"
+
+[deploy]
+startCommand = "node dist/index.js"
+healthcheckPath = "/health"
+healthcheckTimeout = 60
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 5
+# Only one replica: the job queue and SQLite live in-process on the /data volume.
+numReplicas = 1
