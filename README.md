@@ -72,3 +72,22 @@ The first image build takes ~10 min (Rust + Stellar CLI). Builds run on the Dokp
 - `caatinga.artifacts.json` is never edited by hand.
 - `--source` is always an identity alias (the project id); private keys never cross the API.
 - Every long operation is an async job (`POST .../build|deploy` → `GET /jobs/:id`).
+
+## Handoff to Pollar Studio
+
+Give the client three things:
+- Base URL: `https://soroban-factory.pollar.dev`
+- `MASTER_TOKEN` (from the Dokploy environment / local `.env`), used only for `POST /projects`.
+- [docs/API.md](docs/API.md), which matches the deployed implementation.
+
+## Operational notes and known gaps
+
+1. **Backups of `/data`.** The SQLite DB, project workspaces and the testnet identity keys live on the volume. Losing it loses every project. Schedule volume backups in Dokploy (S3 destination).
+2. **Project tokens cannot be rotated.** They are stored hashed and there is no rotate endpoint. A lost token means creating a new project. Candidate: `POST /projects/:id/rotate-token` guarded by the master token.
+3. **No cleanup.** Projects are never deleted or expired. Each compiled project uses ~100 MB (`target/`). With dozens of projects add `DELETE /projects/:id` or a periodic cleanup job.
+4. **Monitoring.** Dokploy restarts the container on failure but does not alert. Point an external uptime check at `/health`.
+5. **Repository visibility.** The repo is public. It holds no secrets (`.env` and `data/` are ignored); make it private on GitHub if preferred, Dokploy keeps working.
+6. **Caatinga bug.** ctg 3.12 hides rustc output when it contains "not found" and reports a missing wasm target instead. The service works around it by re-running `stellar contract build` for diagnostics only (see docs/ARCHITECTURE.md). Worth reporting upstream.
+7. **Single tenant, single replica.** Rust build scripts run with the service's privileges inside the container, and the queue plus SQLite are in-process. Do not scale to multiple replicas without moving state out.
+
+Out of scope for now (see docs/PLAN.md): webhooks, AI-assisted `/generate`, mainnet with wallet signing.
